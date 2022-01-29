@@ -1,0 +1,23 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "Tired of getting to the end of your project and then realizing you still need a great README.md file? Want your project to stand out, but tired of putting in the effort? You've come to the right place! Use this installer to generate a README.md file that is concise and well-rounded! You'll be able to insert everything you need by prompt rather than thinking through what you might be missing. Never second-guess the opening to your project's GitHub page again!",
+  "main": "server.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sarahwylie/animated-goggles.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sarahwylie/animated-goggles/issues"
+  },
+  "homepage": "https://github.com/sarahwylie/animated-goggles#readme",
+  "dependencies": {
+    "jest": "^27.4.7"
+  }
+}
