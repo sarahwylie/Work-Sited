@@ -9,11 +9,6 @@ Clone this repo's code to your computer and pop open the file named 'index.js'. 
 ## Usage
 When you need create a new README for your file, but don't want to think about the input, just ask the Generator for some prompts!
 
-
-https://user-images.githubusercontent.com/90208612/151100105-f29d68fd-900c-48b7-9b38-83bc0e719722.mp4
-
-
-
 ## The finished output:
 ![screenshot](/images/Screenshot.jpg)
 
