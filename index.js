@@ -1,8 +1,8 @@
 const inquirer = require('inquirer');
-``
-// const Department = require('./lib/Manager');
-// const Intern = require('./lib/Intern');
-// const Engineer = require('./lib/Engineer');
+
+const Department = require('./lib/department');
+const Role = require('./lib/role');
+const Employee = require('./lib/employee');
 
 function tableOptions() {
     inquirer.prompt([
@@ -12,64 +12,43 @@ function tableOptions() {
             message: 'What would you like to do?',
             choices: [
                 'Add Department',
-                'Update Department',
-                'Delete Department',
-                // 'View Department Table',
+                'View Department Table',
                 'Add Role',
-                'Update Role',
-                'Delete Role',
-                // 'View Role Table',
+                'View Role Table',
                 'Add Employee',
                 'Update Employee',
-                'Delete Employee',
-                // 'View Employee Table',
-                // 'View Worksite Database'
+                'View Employee Table',
             ],
         },
     ])
         .then(answers => {
             switch (answers.addFeature) {
                 case 'Add Department':
-                    addDept();
+                    Department(addDept());
                     break
-                case 'Update Department':
-                    upDept();
-                    break
-                case 'Delete Department':
-                    delDept();
-                    break
-                // case 'View Department Table':
-                //     `SELECT * FROM department;`;
-                // break
+                case 'View Department Table':
+                    `SELECT * FROM department;`;
+                break
                 case 'Add Role':
-                    addRole();
+                    Role(addRole());
                     break
-                case 'Update Role':
-                    upRole();
-                    break
-                case 'Delete Role':
-                    delRole();
-                    break
-                // case 'View Role Table':
-                //     `SELECT * FROM role;`;
-                // break
+                case 'View Role Table':
+                    `SELECT * FROM role;`;
+                break
                 case 'Add Employee':
-                    addEmp();
+                    Employee(addEmp());
                     break
                 case 'Update Employee':
-                    upEmp();
+                    Employee(upEmp());
                     break
-                case 'Delete Employee':
-                    delEmp();
-                    break
-                // case 'View Employee Table':
-                //     `SELECT * FROM employee;`;
-                // break
-                // case 'View Worksite Database':
-                //     `SELECT * FROM employee;`;
+                case 'View Employee Table':
+                    `SELECT * FROM employee;`;
+                break
+                case 'View Worksite Database':
+                    `SELECT * FROM worksite;`;
             }
-        })
-}
-function addDept() {
+        });
+    tableOptions()  
+};
 
-}
+tableOptions();
