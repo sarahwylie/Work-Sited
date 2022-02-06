@@ -18,6 +18,9 @@
   },
   "homepage": "https://github.com/sarahwylie/animated-goggles#readme",
   "dependencies": {
-    "jest": "^27.4.7"
+    "console.table": "^0.10.0",
+    "inquirer": "^8.2.0",
+    "jest": "^27.4.7",
+    "mysql2": "^2.3.3"
   }
 }

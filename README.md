@@ -1,20 +1,20 @@
 # OrganizeMe
 
 ## Description
-Tired of getting to the end of your project and then realizing you still need a great README.md file? Want your project to stand out, but tired of putting in the effort? You've come to the right place! Use this installer to generate a README.md file that is concise and well-rounded! You'll be able to insert everything you need by prompt rather than thinking through what you might be missing. Never second-guess the opening to your project's GitHub page again!
+Need to create and view a list of all the departments, roles, and employees at your worksite? What about when you add salaries and managers into the mix? This is getting too complicated! Get it all out into a database and manage your worksite in an orderly manner that requires little maintenance.
 
 ## Installation
-Clone this repo's code to your computer and pop open the file named 'index.js'. In your terminal, type 'node index' and follow the command prompts. Once you have completed all prompts, hop over to the "dist" folder and pop open your new README.md file to see your beautiful new README!
+Clone this repo's code to your computer and pop open the file named 'index.js'. In your terminal, type 'node index' and follow the command prompts. The prompts will continue to cycle through until you hit "Ctrl+C" to quit the terminal session.
 
 ## Usage
-When you need create a new README for your file, but don't want to think about the input, just ask the Generator for some prompts!
+This is the best way for your worksite to stay organized!
 
 ## The finished output:
 ![screenshot](/images/Screenshot.jpg)
 
 ## Badges
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-![Markdown](https://img.shields.io/badge/markdown-%23000000.svg?style=for-the-badge&logo=markdown&logoColor=white)
+![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
 ![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
 ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)
 

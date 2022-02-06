@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 require('console.table');
 
-const db = require('./db/index');
+const db = require('./db');
 
 function tableOptions() {
     inquirer.prompt([
@@ -38,6 +38,7 @@ function tableOptions() {
                     viewEmp()
                     break
                 case 'Add Employee':
+                    console.log(db.viewAllRole());
                     addEmp()
                     break
                 case 'Update Employee':
@@ -46,7 +47,7 @@ function tableOptions() {
         });
 };
 function viewDept() {
-    db.viewAllDept()
+    db.query(`SELECT department.id, department.name`)
         .then(([rows]) => {
             let department = rows;
             console.log('\n');
@@ -121,8 +122,9 @@ function addRole() {
         .then((res) => {
             let name = res.roleName;
             let salary = res.salary;
-            db.viewAllRole().then(([rows]) => {
-                let roles = rows;
+            db.viewAllRole()
+            .then(([rows]) => {
+                let role = rows;
                 const deptChoices = department.map(({ id, name }) => ({
                     name: name,
                     value: id
@@ -190,6 +192,7 @@ function addEmp() {
         },
     ])
         .then((res) => {
+            console.log(db.viewAllRole);
             let first_name = res.firstName;
             let last_name = res.lastName;
             db.viewAllRole().then(([rows]) => {
@@ -280,7 +283,7 @@ function upEmp() {
                         .then(() => { tableOptions(); })
                 })
         })
-    };
+};
 
 
 tableOptions();
