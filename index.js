@@ -47,7 +47,8 @@ function tableOptions() {
         });
 };
 function viewDept() {
-    db.query(`SELECT department.id, department.name`)
+    db.viewAllDept()
+    // db.query(`SELECT department.id, department.name`)
         .then(([rows]) => {
             let department = rows;
             console.log('\n');
