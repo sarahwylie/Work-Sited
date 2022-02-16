@@ -1,5 +1,6 @@
 DROP DATABASE IF EXISTS worksite;
 CREATE DATABASE worksite;
+USE worksite;
 
 CREATE TABLE department (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,

@@ -1,7 +1,55 @@
 const inquirer = require('inquirer');
 require('console.table');
+const connection = require('./db/connection');
 
-const db = require('./db');
+
+function viewAllDept() {
+    connection.query(`SELECT department.id, department.name FROM department`, function (req, res) {
+        const department = [];
+        res.forEach((dept) => {
+            department.push(dept.name)
+        })
+        return department
+    })
+};
+
+function addedDept(department) {
+    return connection.query(`INSERT INTO department SET ?`, department)
+};
+
+function viewAllRole() {
+    return connection.query(`SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id = department.id`)
+};
+
+function addedRole(role) {
+    return connection.query(`INSERT INTO role SET ?`, role)
+};
+
+function viewAllEmp() {
+    return connection.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name 
+                    AS department, role.salary, 
+                    CONCAT (manager.first_name, " ", manager.last_name) 
+                    AS manager 
+                    FROM employee 
+                    LEFT JOIN role 
+                    ON employee.role_id = role.id
+                    LEFT JOIN department ON role.department_id = department_id 
+                    LEFT JOIN manager 
+                    ON manager.id = employee.manager_id;`)
+};
+
+function addedEmp(employee) {
+    return connection.query(`INSERT INTO employee SET ?`, employee)
+};
+
+function UpdEmp(empId, empRoleId) {
+    return connection.query(
+        `UPDATE employee SET role_id = ? WHERE id = ?`,
+        [empRoleId, empId]
+    )
+};
+
+let department;
 
 function tableOptions() {
     inquirer.prompt([
@@ -32,13 +80,12 @@ function tableOptions() {
                     viewRole()
                     break
                 case 'Add Role':
-                    addRole
+                    addRole()
                     break
                 case 'View Employee Table':
                     viewEmp()
                     break
                 case 'Add Employee':
-                    console.log(db.viewAllRole());
                     addEmp()
                     break
                 case 'Update Employee':
@@ -47,12 +94,10 @@ function tableOptions() {
         });
 };
 function viewDept() {
-    db.viewAllDept()
-    // db.query(`SELECT department.id, department.name`)
-        .then(([rows]) => {
-            let department = rows;
+    viewAllDept()
+        .then((rows) => {
             console.log('\n');
-            console.table(department);
+            console.table(rows);
         })
         .then(() => {
             tableOptions();
@@ -62,7 +107,7 @@ function addDept() {
     inquirer.prompt([
         {
             type: 'input',
-            name: 'deptName',
+            name: 'name',
             message: "What is the department's name? (Required)",
             validate: nameInput => {
                 if (nameInput) {
@@ -75,13 +120,14 @@ function addDept() {
         },
     ])
         .then((res) => {
-            let department = { department_name: res.deptName }
-            db.addedDept(department)
+            department = res
+            addedDept(department)
+                .then(() => console.log(`New department name is ${department}`))
+                .then(() => tableOptions())
         })
-        .then(() => { tableOptions(); })
 };
 function viewRole() {
-    db.viewAllRole()
+    viewAllRole()
         .then(([rows]) => {
             let role = rows;
             console.log('\n');
@@ -95,7 +141,7 @@ function addRole() {
     inquirer.prompt([
         {
             type: 'input',
-            name: 'roleName',
+            name: 'title',
             message: "What is the name of this role? (Required)",
             validate: nameInput => {
                 if (nameInput) {
@@ -121,39 +167,41 @@ function addRole() {
         },
     ])
         .then((res) => {
-            let name = res.roleName;
+            let name = res.title;
             let salary = res.salary;
-            db.viewAllRole()
-            .then(([rows]) => {
-                let role = rows;
-                const deptChoices = department.map(({ id, name }) => ({
-                    name: name,
-                    value: id
-                }))
-                inquirer.prompt(
-                    {
-                        type: 'list',
-                        name: 'deptID',
-                        message: "In which department is this role located?",
-                        choices: deptChoices
-                    }
-                )
-            })
-                .then((res) => {
-                    let role = {
-                        department_id: deptID,
-                        role_name: name,
-                        salary: salary
-                    }
-                    db.addedRole(role)
+            viewAllRole()
+                .then(([rows]) => {
+                    // let role = rows;
+                    console.log(viewAllDept())
+                    const deptChoices = viewAllDept().map(({ name, id }) => ({
+                        name: name,
+                        value: id
+                    }))
+                    inquirer.prompt(
+                        {
+                            type: 'list',
+                            name: 'department_id',
+                            message: "In which department is this role located?",
+                            choices: deptChoices
+                        }
+                    )
+                        .then((res) => {
+                            let role = {
+                                department_name: department_name,
+                                role_name: name,
+                                salary: salary
+                            }
+                            addedRole(role)
+                        })
+                        .then(console.log(`${name} successfully added to database`))
+                        .then(() => { tableOptions(); })
                 })
-                .then(console.log(`${role} successfully added to database`))
-                .then(() => { tableOptions(); })
+
         })
 };
 
 function viewEmp() {
-    db.viewAllEmp()
+    viewAllEmp()
         .then(([rows]) => {
             let employees = rows;
             console.log('\n');
@@ -167,7 +215,7 @@ function addEmp() {
     inquirer.prompt([
         {
             type: 'input',
-            name: 'firstName',
+            name: 'first_name',
             message: "What is the employee's first name? (Required)",
             validate: firstNameInput => {
                 if (firstNameInput) {
@@ -180,7 +228,7 @@ function addEmp() {
         },
         {
             type: 'input',
-            name: 'lastName',
+            name: 'last_name',
             message: "What is the employee's last name? (Required)",
             validate: lastNameInput => {
                 if (lastNameInput) {
@@ -193,10 +241,10 @@ function addEmp() {
         },
     ])
         .then((res) => {
-            console.log(db.viewAllRole);
-            let first_name = res.firstName;
-            let last_name = res.lastName;
-            db.viewAllRole().then(([rows]) => {
+            console.log(viewAllRole);
+            let first_name = res.first_name;
+            let last_name = res.last_name;
+            viewAllRole().then(([rows]) => {
                 let roles = rows;
                 const roleChoices = roles.map(({ id, title }) => ({
                     name: title,
@@ -205,47 +253,47 @@ function addEmp() {
                 inquirer.prompt(
                     {
                         type: 'list',
-                        name: 'roleID',
+                        name: 'role_id',
                         message: "What is the employee's role?",
                         choices: roleChoices
                     }
                 )
-            })
-                .then((res) => {
-                    let roleId = res.roleId;
-                    db.viewAllEmp()
-                        .then(([rows]) => {
-                            let employees = rows;
-                            const managerChoices = employees.map(({ id, first_name, last_name }) => ({
-                                name: `${first_name} ${last_name}`,
-                                value: id
-                            }))
-                            managerChoices.unshift({ name: 'none', value: null })
-                            inquirer.prompt(
-                                {
-                                    type: 'list',
-                                    name: 'mgrID',
-                                    message: "Who is the employee's manager?",
-                                    choices: managerChoices
-                                }
-                            )
-                                .then((res) => {
-                                    let employee = {
-                                        manager_id: res.mgrID,
-                                        role_id: roleId,
-                                        first_name: first_name,
-                                        first_name: last_name
+                    .then((res) => {
+                        let roleId = res.role_id;
+                        viewAllEmp()
+                            .then(([rows]) => {
+                                let employees = rows;
+                                const managerChoices = employees.map(({ id, first_name, last_name }) => ({
+                                    name: `${first_name} ${last_name}`,
+                                    value: id
+                                }))
+                                managerChoices.unshift({ name: 'none', value: null })
+                                inquirer.prompt(
+                                    {
+                                        type: 'list',
+                                        name: 'manager_id',
+                                        message: "Who is the employee's manager?",
+                                        choices: managerChoices
                                     }
-                                    db.addedEmp(employee)
-                                })
-                                .then(() => { tableOptions(); })
-                        })
-                })
+                                )
+                                    .then((res) => {
+                                        let employee = {
+                                            manager_id: res.manager_id,
+                                            role_id: role_id,
+                                            first_name: first_name,
+                                            first_name: last_name
+                                        }
+                                        addedEmp(employee)
+                                    })
+                                    .then(() => { tableOptions(); })
+                            })
+                    })
+            })
         })
 };
 
 function upEmp() {
-    db.viewAllEmp().then(([rows]) => {
+    viewAllEmp().then(([rows]) => {
         let employees = rows;
         const empChoices = employees.map(({ id, first_name, last_name }) => ({
             name: `${first_name} ${last_name}`,
@@ -254,15 +302,15 @@ function upEmp() {
         inquirer.prompt(
             {
                 type: 'list',
-                name: 'empId',
+                name: 'name',
                 message: "What is the employee's name?",
                 choices: empChoices
             }
         )
     })
         .then((res) => {
-            let empId = res.empId;
-            db.viewAllRole()
+            let empId = res;
+            viewAllRole()
                 .then(([rows]) => {
                     let roles = rows;
                     const roleChoices = roles.map(({ id, title }) => ({
@@ -272,13 +320,13 @@ function upEmp() {
                     inquirer.prompt(
                         {
                             type: 'list',
-                            name: 'roleId',
+                            name: 'role_id',
                             message: "What is the employee's new role?",
                             choices: roleChoices
                         }
                     )
                         .then((res) => {
-                            db.updEmp(empId, res.roleId)
+                            updEmp(empId, res.role_id)
                         })
                         .then(() => console.log('Yay!'))
                         .then(() => { tableOptions(); })
