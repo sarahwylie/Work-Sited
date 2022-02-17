@@ -4,50 +4,111 @@ const connection = require('./db/connection');
 
 
 function viewAllDept() {
-    connection.query(`SELECT department.id, department.name FROM department`, function (req, res) {
+    return new Promise(function (resolve, reject) {
+        var deptQuery = `SELECT department.id, department.name FROM department`;
         const department = [];
-        res.forEach((dept) => {
-            department.push(dept.name)
-        })
-        return department
-    })
-};
+        connection.query(deptQuery, department, (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(rows);
+        });
+    });
+}
+
+//     this.connection.promise().query(`SELECT department.id, department.name FROM department`, function (req, res) {
+//         res.forEach((dept) => {
+//             department.push(dept.name)
+//         })
+//         return department
+//     })
+// })};
 
 function addedDept(department) {
-    return connection.query(`INSERT INTO department SET ?`, department)
+    return new Promise(function (resolve, reject) {
+        const addde = `INSERT INTO department SET ?`;
+        connection.query(addde, department, (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(rows);
+        });
+    });
 };
 
 function viewAllRole() {
-    return connection.query(`SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id = department.id`)
+    return new Promise(function (resolve, reject) {
+        const vwrl = `SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department ON role.department_id = department.id`;
+        connection.query(vwrl, (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(rows);
+        });
+    });
 };
 
 function addedRole(role) {
-    return connection.query(`INSERT INTO role SET ?`, role)
+    // return connection.query(`INSERT INTO role SET ?`, role)
+    return new Promise(function (resolve, reject) {
+        const adrl = `INSERT INTO role SET ?`;
+        connection.query(adrl, role, (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(rows);
+        });
+    });
 };
 
 function viewAllEmp() {
-    return connection.query(`SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name 
-                    AS department, role.salary, 
-                    CONCAT (manager.first_name, " ", manager.last_name) 
-                    AS manager 
-                    FROM employee 
-                    LEFT JOIN role 
-                    ON employee.role_id = role.id
-                    LEFT JOIN department ON role.department_id = department_id 
-                    LEFT JOIN manager 
-                    ON manager.id = employee.manager_id;`)
+    return new Promise(function (resolve, reject) {
+        const vwem = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name 
+                        AS department, role.salary, 
+                        CONCAT (manager.first_name, " ", manager.last_name) 
+                        AS manager 
+                        FROM employee 
+                        LEFT JOIN role 
+                        ON employee.role_id = role.id
+                        LEFT JOIN department ON role.department_id = department_id 
+                        LEFT JOIN manager 
+                        ON manager.id = employee.manager_id;`;
+        connection.query(vwem, (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(rows);
+        });
+    });
 };
 
 function addedEmp(employee) {
-    return connection.query(`INSERT INTO employee SET ?`, employee)
+    // return connection.query(`INSERT INTO employee SET ?`, employee)
+    return new Promise(function (resolve, reject) {
+        const adem = `INSERT INTO employee SET ?`;
+        connection.query(adem, employee, (err, rows) => {
+            if (err) {
+                return reject(err);
+            }
+            resolve(rows);
+        });
+    });
 };
 
 function UpdEmp(empId, empRoleId) {
-    return connection.query(
-        `UPDATE employee SET role_id = ? WHERE id = ?`,
-        [empRoleId, empId]
-    )
-};
+    // return connection.query(
+    //     `UPDATE employee SET role_id = ? WHERE id = ?`,
+    //     [empRoleId, empId]
+        return new Promise(function (resolve, reject) {
+            const upem = `UPDATE employee SET role_id = ? WHERE id = ?`;
+            connection.query(upem, empRoleId, empId, (err, rows) => {
+                if (err) {
+                    return reject(err);
+                }
+                resolve(rows);
+            });
+        });
+    };
 
 let department;
 
@@ -94,6 +155,7 @@ function tableOptions() {
         });
 };
 function viewDept() {
+    console.log(viewAllDept);
     viewAllDept()
         .then((rows) => {
             console.log('\n');
@@ -171,7 +233,7 @@ function addRole() {
             let salary = res.salary;
             viewAllRole()
                 .then(([rows]) => {
-                    // let role = rows;
+                    let role = rows;
                     console.log(viewAllDept())
                     const deptChoices = viewAllDept().map(({ name, id }) => ({
                         name: name,
