@@ -16,14 +16,6 @@ function viewAllDept() {
     });
 }
 
-//     this.connection.promise().query(`SELECT department.id, department.name FROM department`, function (req, res) {
-//         res.forEach((dept) => {
-//             department.push(dept.name)
-//         })
-//         return department
-//     })
-// })};
-
 function addedDept(department) {
     return new Promise(function (resolve, reject) {
         const addde = `INSERT INTO department SET ?`;
@@ -71,7 +63,7 @@ function viewAllEmp() {
                         LEFT JOIN role 
                         ON employee.role_id = role.id
                         LEFT JOIN department ON role.department_id = department_id 
-                        LEFT JOIN manager 
+                        LEFT JOIN employee manager
                         ON manager.id = employee.manager_id;`;
         connection.query(vwem, (err, rows) => {
             if (err) {
@@ -95,20 +87,27 @@ function addedEmp(employee) {
     });
 };
 
-function UpdEmp(empId, empRoleId) {
-    // return connection.query(
-    //     `UPDATE employee SET role_id = ? WHERE id = ?`,
-    //     [empRoleId, empId]
-        return new Promise(function (resolve, reject) {
-            const upem = `UPDATE employee SET role_id = ? WHERE id = ?`;
-            connection.query(upem, empRoleId, empId, (err, rows) => {
+function updEmp(empId, empRoleId) {
+    console.log("TOOTIE", empId)
+    return new Promise(function (resolve, reject) {
+        // const upem = `UPDATE employee SET role_id = ? WHERE id = ?`;
+        // connection.query(upem, empId, empRoleId, (err, rows) => {
+        //     if (err) {
+        //         return reject(err);
+        //     }
+        //     console.log("FARTS!");
+        //     resolve(rows);
+        // });
+        connection.query(`UPDATE employee SET role_id = ? WHERE id = ?`, [empRoleId, empId.name], (err, rows) => {
                 if (err) {
                     return reject(err);
                 }
+                console.log("FARTS!");
                 resolve(rows);
-            });
-        });
-    };
+    });
+});
+
+};
 
 let department;
 
@@ -190,7 +189,7 @@ function addDept() {
 };
 function viewRole() {
     viewAllRole()
-        .then(([rows]) => {
+        .then((rows) => {
             let role = rows;
             console.log('\n');
             console.table(role);
@@ -200,71 +199,65 @@ function viewRole() {
         })
 };
 function addRole() {
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'title',
-            message: "What is the name of this role? (Required)",
-            validate: nameInput => {
-                if (nameInput) {
-                    return true;
-                } else {
-                    console.log("Please enter the role name!");
-                    return false;
-                }
-            }
-        },
-        {
-            type: 'input',
-            name: 'salary',
-            message: "What is the salary for this role? (Required)",
-            validate: salaryInput => {
-                if (salaryInput) {
-                    return true;
-                } else {
-                    console.log('Please enter the salary!');
-                    return false;
-                }
-            }
-        },
-    ])
-        .then((res) => {
-            let name = res.title;
-            let salary = res.salary;
-            viewAllRole()
-                .then(([rows]) => {
-                    let role = rows;
-                    console.log(viewAllDept())
-                    const deptChoices = viewAllDept().map(({ name, id }) => ({
-                        name: name,
-                        value: id
-                    }))
-                    inquirer.prompt(
-                        {
-                            type: 'list',
-                            name: 'department_id',
-                            message: "In which department is this role located?",
-                            choices: deptChoices
-                        }
-                    )
-                        .then((res) => {
-                            let role = {
-                                department_name: department_name,
-                                role_name: name,
-                                salary: salary
-                            }
-                            addedRole(role)
-                        })
-                        .then(console.log(`${name} successfully added to database`))
-                        .then(() => { tableOptions(); })
-                })
-
-        })
+    viewAllDept().then((rows) => {
+        let role = rows;
+        const deptChoices = role.map(({ id, name }) => ({
+            value: id,
+            name: name
+        }));
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'title',
+                message: "What is the name of this role? (Required)",
+                validate: nameInput => {
+                    if (nameInput) {
+                        return true;
+                    } else {
+                        console.log("Please enter the role name!");
+                        return false;
+                    }
+                },
+            },
+            {
+                type: 'input',
+                name: 'salary',
+                message: "What is the salary for this role? (Required)",
+                validate: salaryInput => {
+                    if (salaryInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter the salary!');
+                        return false;
+                    }
+                },
+            },
+            {
+                type: 'list',
+                name: 'department_id',
+                message: "In which department is this role located?",
+                choices: deptChoices
+            },
+        ])
+            .then((res) => {
+                let name = res.title;
+                let salary = res.salary;
+                let department_name = res.department_id;
+                let role = {
+                    title: name,
+                    salary: salary,
+                    department_id: department_name
+                };
+                addedRole(role)
+                    .then(console.log(`${name} successfully added to database`))
+                    .then(() => { tableOptions(); })
+            })
+    })
 };
 
 function viewEmp() {
     viewAllEmp()
-        .then(([rows]) => {
+        .then((rows) => {
             let employees = rows;
             console.log('\n');
             console.table(employees);
@@ -274,124 +267,144 @@ function viewEmp() {
         })
 };
 function addEmp() {
-    inquirer.prompt([
-        {
-            type: 'input',
-            name: 'first_name',
-            message: "What is the employee's first name? (Required)",
-            validate: firstNameInput => {
-                if (firstNameInput) {
-                    return true;
-                } else {
-                    console.log('Please enter the first name!');
-                    return false;
-                }
-            }
-        },
-        {
-            type: 'input',
-            name: 'last_name',
-            message: "What is the employee's last name? (Required)",
-            validate: lastNameInput => {
-                if (lastNameInput) {
-                    return true;
-                } else {
-                    console.log('Please enter the last name!');
-                    return false;
-                }
-            }
-        },
-    ])
-        .then((res) => {
-            console.log(viewAllRole);
-            let first_name = res.first_name;
-            let last_name = res.last_name;
-            viewAllRole().then(([rows]) => {
-                let roles = rows;
-                const roleChoices = roles.map(({ id, title }) => ({
-                    name: title,
-                    value: id
-                }))
-                inquirer.prompt(
-                    {
-                        type: 'list',
-                        name: 'role_id',
-                        message: "What is the employee's role?",
-                        choices: roleChoices
-                    }
-                )
-                    .then((res) => {
-                        let roleId = res.role_id;
-                        viewAllEmp()
-                            .then(([rows]) => {
-                                let employees = rows;
-                                const managerChoices = employees.map(({ id, first_name, last_name }) => ({
-                                    name: `${first_name} ${last_name}`,
-                                    value: id
-                                }))
-                                managerChoices.unshift({ name: 'none', value: null })
-                                inquirer.prompt(
-                                    {
-                                        type: 'list',
-                                        name: 'manager_id',
-                                        message: "Who is the employee's manager?",
-                                        choices: managerChoices
-                                    }
-                                )
-                                    .then((res) => {
-                                        let employee = {
-                                            manager_id: res.manager_id,
-                                            role_id: role_id,
-                                            first_name: first_name,
-                                            first_name: last_name
-                                        }
-                                        addedEmp(employee)
-                                    })
-                                    .then(() => { tableOptions(); })
-                            })
-                    })
-            })
-        })
-};
-
-function upEmp() {
-    viewAllEmp().then(([rows]) => {
-        let employees = rows;
-        const empChoices = employees.map(({ id, first_name, last_name }) => ({
-            name: `${first_name} ${last_name}`,
-            value: id
+    viewAllRole().then((rows) => {
+        let roles = rows;
+        const roleChoices = roles.map(({ id, title }) => ({
+            value: id,
+            name: title
         }))
-        inquirer.prompt(
+        inquirer.prompt([
+            {
+                type: 'input',
+                name: 'first_name',
+                message: "What is the employee's first name? (Required)",
+                validate: firstNameInput => {
+                    if (firstNameInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter the first name!');
+                        return false;
+                    }
+                }
+            },
+            {
+                type: 'input',
+                name: 'last_name',
+                message: "What is the employee's last name? (Required)",
+                validate: lastNameInput => {
+                    if (lastNameInput) {
+                        return true;
+                    } else {
+                        console.log('Please enter the last name!');
+                        return false;
+                    }
+                }
+            },
             {
                 type: 'list',
-                name: 'name',
-                message: "What is the employee's name?",
-                choices: empChoices
-            }
-        )
-    })
-        .then((res) => {
-            let empId = res;
-            viewAllRole()
-                .then(([rows]) => {
-                    let roles = rows;
-                    const roleChoices = roles.map(({ id, title }) => ({
-                        name: title,
+                name: 'role_id',
+                message: "What is the employee's role?",
+                choices: roleChoices
+            },
+        ])
+            .then((res) => {
+                console.log(viewAllRole);
+                let first_name = res.first_name;
+                let last_name = res.last_name;
+                let roleId = res.role_id;
+                viewAllEmp().then((rows) => {
+                    let employees = rows;
+                    const managerChoices = employees.map(({ id, first_name, last_name }) => ({
+                        name: `${first_name} ${last_name}`,
                         value: id
                     }))
+                    managerChoices.unshift({ name: 'none', value: null })
                     inquirer.prompt(
                         {
                             type: 'list',
-                            name: 'role_id',
-                            message: "What is the employee's new role?",
-                            choices: roleChoices
+                            name: 'manager_id',
+                            message: "Who is the employee's manager?",
+                            choices: managerChoices
                         }
-                    )
-                        .then((res) => {
-                            updEmp(empId, res.role_id)
+                    ).then((res) => {
+                        console.log(res)
+                        let manager_id = res.manager_id
+                        // viewAllDept().then((rows) => {
+                        //     let role = rows;
+                        //     const deptChoices = role.map(({ id, name }) => ({
+                        //         value: id,
+                        //         name: name
+                        //     }))
+                        //     inquirer.prompt([
+                        //         {
+                        //             type: 'list',
+                        //             name: 'department_id',
+                        //             message: "In which department is this role located?",
+                        //             choices: deptChoices
+                        //         }
+                        //     ])
+                        // .then((res) => {
+                        //     console.log(res)
+                        // let department_name = res.department_id;
+                        let employee = {
+                            manager_id: manager_id,
+                            role_id: roleId,
+                            first_name: first_name,
+                            last_name: last_name,
+                            // department_id: department_name
+                        }
+                        addedEmp(employee)
+                            .then(() => { tableOptions(); })
+                    })
+                })
+            })
+    })
+};
+
+function upEmp() {
+    viewAllEmp()
+        .then((rows) => {
+            let employees = rows;
+            const empChoices = employees.map(({ id, first_name, last_name }) => ({
+                name: `${first_name} ${last_name}`,
+                value: id
+            }))
+            inquirer.prompt(
+                {
+                    type: 'list',
+                    name: 'name',
+                    message: "What is the employee's name?",
+                    choices: empChoices
+                }
+            )
+
+                .then((res) => {
+                    let empId = res;
+                    console.log(res);
+                    viewAllRole()
+                        .then((rows) => {
+                            let roles = rows;
+                            const roleChoices = roles.map(({ id, title }) => ({
+                                name: title,
+                                value: id
+                            }))
+                            inquirer.prompt(
+                                {
+                                    type: 'list',
+                                    name: 'role_id',
+                                    message: "What is the employee's new role?",
+                                    choices: roleChoices
+                                }
+                            )
+                                .then((res) => {
+                                    console.log(res)
+                                    let empRoleId = res.role_id;
+                                    // let emp = empId + empRoleId);
+                                    updEmp(empId, empRoleId)
+                                        // .then(() => console.log('Yay!')
+                                        .then(() => { tableOptions(); })
+                                })
                         })
-                        .then(() => console.log('Yay!'))
-                        .then(() => { tableOptions(); })
                 })
         })
 };
