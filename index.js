@@ -329,29 +329,11 @@ function addEmp() {
                     ).then((res) => {
                         console.log(res)
                         let manager_id = res.manager_id
-                        // viewAllDept().then((rows) => {
-                        //     let role = rows;
-                        //     const deptChoices = role.map(({ id, name }) => ({
-                        //         value: id,
-                        //         name: name
-                        //     }))
-                        //     inquirer.prompt([
-                        //         {
-                        //             type: 'list',
-                        //             name: 'department_id',
-                        //             message: "In which department is this role located?",
-                        //             choices: deptChoices
-                        //         }
-                        //     ])
-                        // .then((res) => {
-                        //     console.log(res)
-                        // let department_name = res.department_id;
                         let employee = {
                             manager_id: manager_id,
                             role_id: roleId,
                             first_name: first_name,
                             last_name: last_name,
-                            // department_id: department_name
                         }
                         addedEmp(employee)
                             .then(() => { tableOptions(); })
@@ -380,7 +362,6 @@ function upEmp() {
 
                 .then((res) => {
                     let empId = res;
-                    console.log(res);
                     viewAllRole()
                         .then((rows) => {
                             let roles = rows;
@@ -397,11 +378,8 @@ function upEmp() {
                                 }
                             )
                                 .then((res) => {
-                                    console.log(res)
                                     let empRoleId = res.role_id;
-                                    // let emp = empId + empRoleId);
                                     updEmp(empId, empRoleId)
-                                        // .then(() => console.log('Yay!')
                                         .then(() => { tableOptions(); })
                                 })
                         })

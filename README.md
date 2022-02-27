@@ -10,7 +10,7 @@ Clone this repo's code to your computer and pop open the file named 'index.js'. 
 This is the best way for your worksite to stay organized!
 
 ## The finished output:
-![screenshot](/images/Screenshot.jpg)
+![screenshot](./Screenshot.png)
 
 ## Badges
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
