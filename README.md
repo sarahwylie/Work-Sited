@@ -12,6 +12,10 @@ This is the best way for your worksite to stay organized!
 ## The finished output:
 ![screenshot](./Screenshot.png)
 
+## The site in action!
+https://user-images.githubusercontent.com/90208612/162328869-379040b3-ab1d-4eda-80fa-0e51c8671bd0.mp4
+
+
 ## Badges
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
 ![MySQL](https://img.shields.io/badge/mysql-%2300f.svg?style=for-the-badge&logo=mysql&logoColor=white)
